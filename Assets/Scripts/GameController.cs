@@ -8,9 +8,12 @@ public class GameController : MonoBehaviour {
     public Image character;
 
     private Vector3 targetPosition;
+    private Vector3 lastTargetPosition;
+    private bool insideCollider;
+   
 	// Use this for initialization
 	void Start () {
-        //targetPosition = character.transform.position;
+        insideCollider = false;
 	}
 	
 	// Update is called once per frame
@@ -18,14 +21,43 @@ public class GameController : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(0))
         {
-            //OR- Ray ray = Camera.main.ScreenPointToRay(new Vector3(posX, posY, 0));
-            Vector3 targetPosition = Input.mousePosition;
-            Debug.Log(targetPosition);
-
+            targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
 
-       
-        character.transform.position = Vector3.MoveTowards(character.transform.position, targetPosition, Time.deltaTime * 20);
+        // Vamos hacía el objetivo clicado siempre y cuando no haya collider
+        if (!insideCollider)
+        {
+            character.transform.position = Vector3.MoveTowards(
+                    new Vector3(character.transform.position.x, character.transform.position.y, 0),
+                    new Vector3(targetPosition.x, targetPosition.y, 0),
+                    Time.deltaTime * 20);
 
+            lastTargetPosition = character.transform.position;
+        }
+        else {
+
+            // Hacemos moon walker para irnos del collider.
+            character.transform.position = Vector3.MoveTowards(
+                    new Vector3(character.transform.position.x, character.transform.position.y, 0),
+                    new Vector3(-targetPosition.x, -targetPosition.y, 0),
+                    Time.deltaTime * 20);
+        }
     }
+
+    // Evento que se ejecutara remotamente cuando el personaje toque un collider
+    public void detectCollider(Vector3 collider)
+    {
+        insideCollider = true;
+        targetPosition = collider;
+    }
+
+    // Evento que se ejecutara remotamente cuando el personaje salga de un collider
+    public void outsideCollider(Vector3 collider)
+    {
+        insideCollider = false;
+        targetPosition = character.transform.position;
+    }
+
+    
+
 }

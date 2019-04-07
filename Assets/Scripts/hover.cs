@@ -41,6 +41,9 @@ public class hover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, I
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        button.sprite = customSprite;
+		//if(buttonRect.Contains(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y), true)) {
+			button.sprite = hoverSprite;
+		//}
+		//button.sprite = customSprite;
     }
 }
